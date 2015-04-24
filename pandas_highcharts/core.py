@@ -36,6 +36,12 @@ def json_encode(obj):
 
 
 def serialize(df, output_type="javascript", chart_type="default", *args, **kwargs):
+    def serialize_animation(df, output, *args, **kwargs):
+        output["plotOptions"] = {}
+        output["plotOptions"]["series"] = {
+            "animation": kwargs.get("animation", True)
+        }
+
     def serialize_chart(df, output, *args, **kwargs):
         output["chart"] = {"renderTo": kwargs["render_to"]}
         if "figsize" in kwargs:
@@ -168,6 +174,7 @@ def serialize(df, output_type="javascript", chart_type="default", *args, **kwarg
         df_copy = df_copy.reset_index()
     if "y" in kwargs:
         df_copy = pandas.DataFrame(df_copy, columns=kwargs["y"])
+    serialize_animation(df_copy, output, *args, **kwargs)
     serialize_chart(df_copy, output, *args, **kwargs)
     serialize_colors(df_copy, output, *args, **kwargs)
     serialize_credits(df_copy, output, *args, **kwargs)
